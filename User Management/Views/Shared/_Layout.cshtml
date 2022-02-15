@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -17,14 +20,37 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+                    @{
+                        if (SignInManager.IsSignedIn(User))
+                        {
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                                </li>
+
+                            </ul>
+                            <ul class="navbar-nav d-flex justify-content-end">
+                                <li class="nav-item ">
+                                    <a class="btn btn-danger" asp-area="User" asp-controller="Account" asp-action="Logout" onclick="return ConfirmLogout()">Logout</a>
+                                </li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <ul class="navbar-nav d-flex justify-content-end flex-grow-1">
+                                <li class="nav-item">
+                                    <a asp-area="User" asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-area="User" asp-controller="Account" asp-action="Register" class="btn">Register</a>
+                                </li>
+
+                            </ul>
+                        }
+                    }
                 </div>
             </div>
         </nav>
@@ -43,6 +69,11 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        function ConfirmLogout() {
+            return confirm("Are you sure to Logout?");
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

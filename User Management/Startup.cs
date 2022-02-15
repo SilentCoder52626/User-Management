@@ -26,10 +26,14 @@ namespace User_Management
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultConnectionString");
+            string connectionString = Configuration.GetConnectionString("DefaultConnectionString");
             services.AddControllersWithViews();
             services.AddDbContext<AppDbContext>(option => option.UseMySql(connectionString, MySqlServerVersion.AutoDetect(connectionString)));
             services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            services.ConfigureApplicationCookie(config =>
+            {
+                config.LoginPath = "/User/Account/Login";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
