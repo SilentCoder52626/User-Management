@@ -27,13 +27,21 @@ namespace User_Management
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnectionString");
-            services.AddControllersWithViews();
             services.AddDbContext<AppDbContext>(option => option.UseMySql(connectionString, MySqlServerVersion.AutoDetect(connectionString)));
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>(config =>
+            {
+                config.Password.RequiredLength = 4;
+                config.Password.RequireNonAlphanumeric = false;
+                config.Password.RequireUppercase = false;
+                config.Password.RequireDigit = false;
+                //config.SignIn.RequireConfirmedEmail = true;
+            }).AddEntityFrameworkStores<AppDbContext>();
+
             services.ConfigureApplicationCookie(config =>
             {
                 config.LoginPath = "/User/Account/Login";
             });
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
