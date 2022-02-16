@@ -1,13 +1,20 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using User_Management.Areas.User.Models;
 using User_Management.Controllers;
 
 namespace User_Management.Areas.User.Controllers
 {
+    [AllowAnonymous]
     [Area("User")]
     public class AccountController : Controller
     {
@@ -53,7 +60,7 @@ namespace User_Management.Areas.User.Controllers
             return View();
         }
 
-        public IActionResult Login(string? returnUrl = null)
+        public IActionResult Login(string returnUrl = null)
         {
             LoginViewModel model = new()
             {
@@ -87,6 +94,65 @@ namespace User_Management.Areas.User.Controllers
         {
             await SignInManager.SignOutAsync();
             return RedirectToAction(nameof(Login));
+        }
+        public IActionResult GoogleLogin(string returnUrl)
+        {
+
+            var redirectUrl = Url.Action(nameof(GoogleResponse), new { ReturnUrl = returnUrl });
+            var properties = SignInManager
+                .ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+            return new ChallengeResult("Google", properties);
+
+        }
+        public async Task<IActionResult> GoogleResponse(string returnUrl = null, string remoteError = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            LoginViewModel loginViewModel = new()
+            {
+                ReturnUrl = returnUrl
+            };
+            if (remoteError != null)
+            {
+                ModelState.AddModelError("", $"Error From External Provider: {remoteError}");
+                return View(nameof(Login), loginViewModel);
+            }
+
+            var result = await SignInManager.GetExternalLoginInfoAsync();
+
+            if (result == null)
+            {
+                ModelState.AddModelError("", $"Error Loading external login information.");
+                return View(nameof(Login), loginViewModel);
+            }
+            var SignInResult = await SignInManager.ExternalLoginSignInAsync(result.LoginProvider, result.ProviderKey, false, true);
+            if (SignInResult.Succeeded)
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                var email = result.Principal.FindFirstValue(ClaimTypes.Email);
+                if (email != null)
+                {
+                    var user = await UserManager.FindByEmailAsync(email);
+                    if (user == null)
+                    {
+                        user = new IdentityUser()
+                        {
+                            UserName = email,
+                            Email = email
+                        };
+                        await UserManager.CreateAsync(user);
+                    }
+                    await UserManager.AddLoginAsync(user, result);
+                    await SignInManager.SignInAsync(user, false);
+                    return Redirect(returnUrl);
+
+                }
+            }
+
+            return View(nameof(Login), loginViewModel);
+
         }
     }
 }

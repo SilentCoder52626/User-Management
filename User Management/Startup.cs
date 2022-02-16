@@ -41,6 +41,14 @@ namespace User_Management
             {
                 config.LoginPath = "/User/Account/Login";
             });
+
+
+            services.AddAuthentication()
+                .AddGoogle(opts =>
+            {
+                opts.ClientId = Configuration["Google:ClientId"];
+                opts.ClientSecret = Configuration["Google:ClientSecret"];
+            });
             services.AddControllersWithViews();
         }
 
@@ -62,7 +70,6 @@ namespace User_Management
 
             app.UseRouting();
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
