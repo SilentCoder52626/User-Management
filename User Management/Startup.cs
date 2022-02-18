@@ -41,6 +41,19 @@ namespace User_Management
             {
                 config.LoginPath = "/User/Account/Login";
             });
+
+
+            services.AddAuthentication()
+                .AddGoogle(opts =>
+            {
+                opts.ClientId = Configuration["Google:ClientId"];
+                opts.ClientSecret = Configuration["Google:ClientSecret"];
+            }).AddTwitter(twitterOptions =>
+            {
+                twitterOptions.ConsumerKey = Configuration["Twitter:ClientId"];
+                twitterOptions.ConsumerSecret = Configuration["Twitter:ClientSecret"];
+                twitterOptions.RetrieveUserDetails = true;
+            });
             services.AddControllersWithViews();
         }
 
@@ -62,7 +75,6 @@ namespace User_Management
 
             app.UseRouting();
             app.UseAuthentication();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

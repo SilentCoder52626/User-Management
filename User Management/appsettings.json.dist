@@ -1,6 +1,14 @@
 {
   "ConnectionStrings": {
-    "DefaultConnectionString" : "server=localhost;database=User_Management;user=root;"
+    "DefaultConnectionString": "server=localhost;database=User_Management;user=root;"
+  },
+  "Google": {
+    "ClientId": "",
+    "ClientSecret": ""
+  },
+  "Twitter": {
+    "ClientId": "",
+    "ClientSecret": ""
   },
   "Logging": {
     "LogLevel": {
