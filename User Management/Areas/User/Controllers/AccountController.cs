@@ -95,16 +95,25 @@ namespace User_Management.Areas.User.Controllers
             await SignInManager.SignOutAsync();
             return RedirectToAction(nameof(Login));
         }
+        public IActionResult TwitterLogin(string returnUrl)
+        {
+
+            var redirectUrl = Url.Action(nameof(ExternalResponse), new { ReturnUrl = returnUrl });
+            var properties = SignInManager
+                .ConfigureExternalAuthenticationProperties("Twitter", redirectUrl);
+            return new ChallengeResult("Twitter", properties);
+
+        }
         public IActionResult GoogleLogin(string returnUrl)
         {
 
-            var redirectUrl = Url.Action(nameof(GoogleResponse), new { ReturnUrl = returnUrl });
+            var redirectUrl = Url.Action(nameof(ExternalResponse), new { ReturnUrl = returnUrl });
             var properties = SignInManager
                 .ConfigureExternalAuthenticationProperties("Google", redirectUrl);
             return new ChallengeResult("Google", properties);
 
         }
-        public async Task<IActionResult> GoogleResponse(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> ExternalResponse(string returnUrl = null, string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
             LoginViewModel loginViewModel = new()

@@ -3,12 +3,12 @@
     "DefaultConnectionString": "server=localhost;database=User_Management;user=root;"
   },
   "Google": {
-    "ClientId": "28999889287-mrvgi7qsftdcnbd86ibq8bdrqft6dh1k.apps.googleusercontent.com",
-    "ClientSecret": "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"
+    "ClientId": "",
+    "ClientSecret": ""
   },
   "Twitter": {
-    "ClientId": "5UcdbjkUl7f2D38UrguF9NhAP",
-    "ClientSecret": "JTPkwKK3999QcPbE3FfJfGnoQQRn4NPVgR0iOQBBJdm0Xb7hgZ"
+    "ClientId": "",
+    "ClientSecret": ""
   },
   "Logging": {
     "LogLevel": {
